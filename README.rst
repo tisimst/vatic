@@ -21,7 +21,7 @@ To be honest, virtually anything that you can model using the popular
 Microsoft Excel. Need to predict the likelihood that a business venture will
 be successful? Want to know how many assemblies will be scrapped? What are 
 the chances you'll finish your project on time and within budget? These are 
-the kinds of questions that can be answered because Vatic takes the guesswork
+the kinds of questions that can be answered because vatic takes the guesswork
 out of decisions where you don't know precisely what will happen. 
 
 Who can use it?
