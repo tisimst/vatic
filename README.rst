@@ -2,6 +2,9 @@
 vatic: open source risk analysis
 ==================================
 
+.. warning:: THIS PACKAGE IS HIGHLY UNSTABLE AND NOT READY FOR USE! CHECK
+   BACK SOON!
+
 Introduction
 ============
 
