@@ -21,4 +21,4 @@ installed:
 
 """
 
-from vatic import *
+from .vatic import *
