@@ -2,25 +2,40 @@ from vatic import *
 
 v = vatic()
 v.setnpts(1000)
+# v.verbose = True
 
-v.addassumption(cellref='C8', tag=v.getcell('B8'), dist={N, (v.getcell('C8'), v.getcell('D8')/3)})
-v.addassumption(cellref='C9', tag=v.getcell('B9'), dist={N, (v.getcell('C9'), v.getcell('D9')/3)})
-v.addassumption(cellref='C10', tag=v.getcell('B10'), dist={N, (v.getcell('C10'), v.getcell('D10')/3)})
-v.addassumption(cellref='C11', tag=v.getcell('B11'), dist={N, (v.getcell('C11'), v.getcell('D11')/3)})
-v.addassumption(cellref='C12', tag=v.getcell('B12'), dist={N, (v.getcell('C12'), v.getcell('D12')/3)})
-v.addassumption(cellref='C13', tag=v.getcell('B13'), dist={N, (v.getcell('C13'), v.getcell('D13')/3)})
-v.addassumption(cellref='C14', tag=v.getcell('B14'), dist={N, (v.getcell('C14'), v.getcell('D14')/3)})
-v.addassumption(cellref='C15', tag=v.getcell('B15'), dist={N, (v.getcell('C15'), v.getcell('D15')/3)})
+v.addassumption(cell='C8', tag=v.getcell(cell='B8'), 
+    dist={N: (v.getcell(cell='C8'), v.getcell(cell='D8')/3)})
+v.addassumption(cell='C9', tag=v.getcell(cell='B9'), 
+    dist={N: (v.getcell(cell='C9'), v.getcell(cell='D9')/3)})
+v.addassumption(cell='C10', tag=v.getcell(cell='B10'), 
+    dist={N: (v.getcell(cell='C10'), v.getcell(cell='D10')/3)})
+v.addassumption(cell='C11', tag=v.getcell(cell='B11'), 
+    dist={N: (v.getcell(cell='C11'), v.getcell(cell='D11')/3)})
+v.addassumption(cell='C12', tag=v.getcell(cell='B12'), 
+    dist={N: (v.getcell(cell='C12'), v.getcell(cell='D12')/3)})
+v.addassumption(cell='C13', tag=v.getcell(cell='B13'), 
+    dist={N: (v.getcell(cell='C13'), v.getcell(cell='D13')/3)})
+v.addassumption(cell='C14', tag=v.getcell(cell='B14'), 
+    dist={N: (v.getcell(cell='C14'), v.getcell(cell='D14')/3)})
+v.addassumption(cell='C15', tag=v.getcell(cell='B15'), 
+    dist={N: (v.getcell(cell='C15'), v.getcell(cell='D15')/3)})
 
-v.addforecast(cellref='C24', tag=v.getcell('B24'))
-v.addforecast(cellref='C25', tag=v.getcell('B25'))
-v.addforecast(cellref='C26', tag=v.getcell('B26'))
-v.addforecast(cellref='C30', tag=v.getcell('B30'), LSL=v.getcell('C19'), USL=v.getcell('D19'))
-v.addforecast(cellref='C31', tag=v.getcell('B31'), LSL=v.getcell('C20'), USL=v.getcell('D20'))
+v.addforecast(cell='C24', tag=v.getcell(cell='B24'))
+v.addforecast(cell='C25', tag=v.getcell(cell='B25'))
+v.addforecast(cell='C26', tag=v.getcell(cell='B26'))
+v.addforecast(cell='C30', tag=v.getcell(cell='B30'), 
+    LSL=v.getcell(cell='C19'), USL=v.getcell(cell='D19'))
+v.addforecast(cell='C31', tag=v.getcell(cell='B31'), 
+    LSL=v.getcell(cell='C20'), USL=v.getcell(cell='D20'))
 
 v.run_mc()
 v.plot('Seal Comp. %')
 v.plot('Gland Fill %')
-v.forecasts['Seal Comp. %'].getcapabilitymetrics()
-v.forecasts['Gland Fill %'].getcapabilitymetrics()
+sccap = v.forecasts['Seal Comp. %'].getcapabilitymetrics()
+gfcap = v.forecasts['Gland Fill %'].getcapabilitymetrics()
+
+print('Seal Comp. % Capability Metrics:\n', sccap)
+print('Gland Fill % Capability Metrics:\n', gfcap)
+
 
