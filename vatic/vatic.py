@@ -42,9 +42,16 @@ any plots or any unnecessary calculations. Hope it's useful!
         print(info)
         self.verbose = False
 
+    ##################################
+
     def setnpts(self, n):
+        """
+        Set the number of Monte Carlo iterations.
+        """
         mcerp.npts = n
         
+    ##################################
+
     def getcell(self, vobject=None, cell=None, ws=None, wb=None):
         """
         Get the displayed value from a cell. There are two main options here,
@@ -73,6 +80,8 @@ any plots or any unnecessary calculations. Hope it's useful!
         # print('    val: {}'.format(val))
         return val
             
+    ##################################
+
     def setcell(self, vobject=None, value=None, cell=None, ws=None, 
         wb=None):
         """
@@ -96,6 +105,8 @@ any plots or any unnecessary calculations. Hope it's useful!
             cell = str(self.xl.Selection.Address)
         self.xl.Workbooks(wb).Worksheets(ws).Range(cell).Value = value
     
+    ##################################
+
     def setcellbackground(self, vobject=None, color=None, cell=None, ws=None,
         wb=None):
         """
@@ -139,6 +150,8 @@ any plots or any unnecessary calculations. Hope it's useful!
         assert 1<=color<=56, 'Color index must be a value between 1 and 56 or an equivalent letter (see doc)'
         target.Interior.ColorIndex = color
         
+    ##################################
+
     def setforebackground(self, vobject=None, color=None, cell=None, ws=None,
         wb=None):
         """
@@ -183,6 +196,8 @@ any plots or any unnecessary calculations. Hope it's useful!
         assert 1<=color<=56, 'Color index must be a value between 1 and 56 or an equivalent letter (see doc)'
         target.Font.ColorIndex = color
 
+    ##################################
+
     def __repr__(self):
         atags = self.assumptions.keys()
         ftags = self.forecasts.keys()
@@ -199,9 +214,13 @@ any plots or any unnecessary calculations. Hope it's useful!
             tmp += str(self.forecasts[tag])+'\n'
         return tmp
     
+    ##################################
+
     def __str__(self):
         return repr(self)
         
+    ##################################
+
     def addassumption(self, cell=None, tag=None, dist=None, wb=None, 
         ws=None):
         """
@@ -252,6 +271,8 @@ any plots or any unnecessary calculations. Hope it's useful!
             print('Added ASSUMPTION variable "{}": {}'.format(tag, 
                 self.getcell(newvar)))
     
+    ##################################
+
     def addforecast(self, cell=None, tag=None, LSL=None, USL=None,
         target=None, wb=None, ws=None):
         """
@@ -313,7 +334,13 @@ any plots or any unnecessary calculations. Hope it's useful!
             print('Added FORECAST variable "{}": {}'.format(tag, 
                 self.getcell(newvar)))
         
+    ##################################
+
     def run_mc(self):
+        """
+        Perform a Monte Carlo simulation. This assumes that all assumptions
+        and forecasts have been identified previously.
+        """
         # Disable charts and stuff
         self.xl.ScreenUpdating = 0
 
@@ -347,7 +374,7 @@ any plots or any unnecessary calculations. Hope it's useful!
                 
             for it in xrange(npts):
                 if it%(npts/20)==0 and it!=0:
-                    timetemplate = '{} of {} complete (est. {:2.1f} minutes left)'
+                    timetemplate = '{} of {} complete (est. {:2.2f} minutes left)'
                     timeperiter = (time()-start)/(it + 1)
                     print(timetemplate.format(it, npts, timeperiter*(npts - it)/60))
                     if self.verbose:
@@ -359,7 +386,7 @@ any plots or any unnecessary calculations. Hope it's useful!
                         stats = self.get_forecast_stats(upto=self.iter)
                         for i, tag in enumerate(ftags):
                             mn, vr, sk, kt, dmin, dmax = stats[:, i]
-                            sd = np.sqrt(vr)
+                            sd = vr**0.5
                             print(stattemplate%(tag[:min([len(tag), 22])], mn, sd, sk, kt))
                         print(' ')
                     
@@ -403,6 +430,8 @@ any plots or any unnecessary calculations. Hope it's useful!
             if self.verbose:
                 print('SIMULATIONS COMPLETE! (Took approximately {:2.1f} minutes)'.format((time()-start)/60))
     
+    ##################################
+
     def plot(self, tag=None):
         if tag is None:  # plot all forecasts
             ftags = self.forecasts.keys()
@@ -424,11 +453,15 @@ any plots or any unnecessary calculations. Hope it's useful!
             plt.title('Histogram of '+tag)
         plt.show()
     
+    ##################################
+
     def reset(self):
         self.assumptions = {}
         self.forecasts = {}
         self.iter = 0
         
+    ##################################
+
     def get_assumption_stats(self, assumption=None, upto=None):
         """
         Calculate some basic statistics for the assumptions:
@@ -459,6 +492,8 @@ any plots or any unnecessary calculations. Hope it's useful!
         elif isinstance(assumption, AssumptionVariable):
             return assumption.getstats(upto)
 
+    ##################################
+
     def get_forecast_stats(self, forecast=None, upto=None):
         """
         Calculate some basic statistics for the forecasts:
@@ -473,7 +508,7 @@ any plots or any unnecessary calculations. Hope it's useful!
         ----------
         forecast : str or ForecastVariable
             The forecast of interest, either the actual object or its tag
-            (default: None, in which all forecasts' stats will returned)
+            (default: None, in which all forecasts' stats are returned)
         upto : int
             The maximum integer location that should be included in the
             calculations.
@@ -492,6 +527,7 @@ any plots or any unnecessary calculations. Hope it's useful!
 ###############################################################################
 
 class AssumptionVariable:
+
     def __init__(self, cell=None, tag=None, dist=None, wb=None, ws=None):
         self.cell = cell
         self.tag = tag
@@ -506,6 +542,8 @@ class AssumptionVariable:
         # print('    wb: {}'.format(wb))
         # print('    ws: {}'.format(ws))
     
+    ##################################
+
     def __repr__(self):
         tmp = ''
         if self.tag is not None:
@@ -513,7 +551,7 @@ class AssumptionVariable:
         if self.dist is not None:
             func = self.dist.keys()[0]
             params = self.dist[func]
-            tmp += '    Distribution = {}{}\n'.format(func, params)
+            tmp += '    Distribution = {}{}\n'.format(func.__name__, params)
         if self.samples is not None:
             tmp += '    Number of samples = {}\n'.format(len(self.samples))
         if self.cell is not None:
@@ -524,9 +562,13 @@ class AssumptionVariable:
             tmp += '    Workbook = {}\n'.format(self.wb)
         return tmp if tmp!='' else '<Empty AssumptionVariable>'
         
+    ##################################
+
     def __str__(self):
         return repr(self)
         
+    ##################################
+
     def getnewsamples(self):
         if self.dist is not None:
             func = self.dist.keys()[0]
@@ -537,6 +579,8 @@ class AssumptionVariable:
             print('Distribution not defined for {}'.format(self))
             return []
             
+    ##################################
+
     def getstats(self, upto=None):
         """
         Calculate some basic statistics for the samples:
@@ -571,6 +615,7 @@ class AssumptionVariable:
 ###############################################################################
 
 class ForecastVariable:
+
     def __init__(self, cell=None, tag=None, LSL=None, USL=None, target=None,
         wb=None, ws=None):
         self.cell = cell
@@ -581,6 +626,8 @@ class ForecastVariable:
         self.samples = None
         self.wb = wb
         self.ws = ws
+
+    ##################################
 
     def __repr__(self):
         tmp = ''
@@ -602,9 +649,13 @@ class ForecastVariable:
             tmp += '    Workbook = {}\n'.format(self.wb)
         return tmp if tmp!='' else '<Empty ForecastVariable>'
         
+    ##################################
+
     def __str__(self):
         return repr(self)
         
+    ##################################
+
     def getstats(self, upto=None):
         """
         Calculate some basic statistics for the samples:
@@ -636,13 +687,18 @@ class ForecastVariable:
             stats = np.array([mn, vr, sk, kt, dmin, dmax])
             return stats
     
-    def getcapabilitymetrics(self, zshift=1.5):
+    ##################################
+
+    def getcapabilitymetrics(self, zshift=1.5, pprint=False):
         """
         Calculate the capability metrics for a FORECAST variable. The
         individual metrics will only be calculated if the required FORECAST 
         criteria values have been identified (e.g., LSL, USL, and target).
         
         An optional input for ``zshift`` is also available (default: 1.5).
+        
+        An optional kwarg ``pprint`` indicates whether the metrics should be
+        pretty-printed from within this function or not (default: False).
         
         The return value is a dictionary object with the capability metric
         name as the dict key and the metric's value as the dict value.
@@ -717,4 +773,15 @@ class ForecastVariable:
             metrics['Zst'] = -normsinv(pNC_total)
             metrics['Zlt'] = -normsinv(pNC_total)
 
+        if pprint:
+            names = ['Cp', 'Cpk-lower', 'Cpk-upper', 'Cpk', 'Cpm',
+                     'Pp', 'Ppk-lower', 'Ppk-lower', 'Ppk', 'Ppm',
+                     'Z-LSL', 'Z-USL', 'Zst', 'Zlt',
+                     'p(N/C)-below', 'p(N/C)-above', 'p(N/C)-total',
+                     'PPM-below', 'PPM-above', 'PPM-total']
+            print('Capability Metrics for {}:'.format(self.tag))
+            for name in names:
+                if name in metrics:
+                    print('    {} = {}'.format(name, metrics[name]))
+                    
         return metrics
