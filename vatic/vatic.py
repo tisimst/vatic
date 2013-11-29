@@ -53,17 +53,24 @@ any plots or any unnecessary calculations. Hope it's useful!
         exist), or by explicitly identifying the cell-reference (kwarg 
         ``cell``), worksheet (kwarg ``ws``), and workbook (kwarg ``wb``).
         """
-        if vobject in self.assumptions or vobject in self.forecasts:
-            wb = vobject.wb
-            ws = vobject.ws
-            cell = vobject.cell
+        # print('getcell\n-------')
+        if vobject is not None:
+            if vobject.tag in self.assumptions or vobject.tag in self.forecasts:
+                # print('    vobject: {}'.format(vobject))
+                wb = vobject.wb
+                ws = vobject.ws
+                cell = vobject.cell
         if wb is None:
-            wb = self.xl.ActiveWorkbook
+            wb = str(self.xl.ActiveWorkbook.Name)
         if ws is None:
-            ws = self.xl.ActiveSheet
+            ws = str(self.xl.ActiveSheet.Name)
         if cell is None:
             cell = self.xl.Selection.Address
-        val = self.xl.Workbook(wb).Worksheet(ws).Range(cell).Value
+        # print('    wb: {}'.format(wb))
+        # print('    ws: {}'.format(ws))
+        # print('    cell: {}'.format(cell))
+        val = self.xl.Workbooks(wb).Worksheets(ws).Range(cell).Value
+        # print('    val: {}'.format(val))
         return val
             
     def setcell(self, vobject=None, value=None, cell=None, ws=None, 
@@ -76,17 +83,18 @@ any plots or any unnecessary calculations. Hope it's useful!
         reference (kwarg ``cell``), worksheet (kwarg ``ws``), and workbook 
         (kwarg ``wb``).
         """
-        if vobject in self.assumptions or vobject in self.forecasts:
-            wb = vobject.wb
-            ws = vobject.ws
-            cell = vobject.cell
+        if vobject is not None:
+            if vobject.tag in self.assumptions or vobject.tag in self.forecasts:
+                wb = vobject.wb
+                ws = vobject.ws
+                cell = vobject.cell
         if wb is None:
-            wb = self.xl.ActiveWorkbook
+            wb = str(self.xl.ActiveWorkbook.Name)
         if ws is None:
-            ws = self.xl.ActiveSheet
+            ws = str(self.xl.ActiveSheet.Name)
         if cell is None:
-            cell = self.xl.Selection.Address
-        self.xl.Workbook(wb).Worksheet(ws).Range(cell).Value = value
+            cell = str(self.xl.Selection.Address)
+        self.xl.Workbooks(wb).Worksheets(ws).Range(cell).Value = value
     
     def setcellbackground(self, vobject=None, color=None, cell=None, ws=None,
         wb=None):
@@ -103,17 +111,18 @@ any plots or any unnecessary calculations. Hope it's useful!
         - Some other index 9-56 (see dmicritchie.mvps.org/excel/colors.htm for
           more details of what colors these indicies correspond to)
         """
-        if vobject in self.assumptions or vobject in self.forecasts:
-            wb = vobject.wb
-            ws = vobject.ws
-            cell = vobject.cell
+        if vobject is not None:
+            if vobject.tag in self.assumptions or vobject.tag in self.forecasts:
+                wb = vobject.wb
+                ws = vobject.ws
+                cell = vobject.cell
         if wb is None:
-            wb = self.xl.ActiveWorkbook
+            wb = str(self.xl.ActiveWorkbook.Name)
         if ws is None:
-            ws = self.xl.ActiveSheet
+            ws = str(self.xl.ActiveSheet.Name)
         if cell is None:
-            cell = self.xl.Selection.Address
-        target = self.xl.Workbook(wb).Worksheet(ws).Range(cell)
+            cell = str(self.xl.Selection.Address)
+        target = self.xl.Workbooks(wb).Worksheets(ws).Range(cell)
 
         validcolornames = {'k': 1, 'w': 2, 
                            'r': 3, 'g': 4, 'b': 5, 
@@ -146,17 +155,18 @@ any plots or any unnecessary calculations. Hope it's useful!
         - Some other index 9-56 (see dmicritchie.mvps.org/excel/colors.htm for
           more details of what colors these indicies correspond to)
         """
-        if vobject in self.assumptions or vobject in self.forecasts:
-            wb = vobject.wb
-            ws = vobject.ws
-            cell = vobject.cell
+        if vobject is not None:
+            if vobject.tag in self.assumptions or vobject.tag in self.forecasts:
+                wb = vobject.wb
+                ws = vobject.ws
+                cell = vobject.cell
         if wb is None:
-            wb = self.xl.ActiveWorkbook
+            wb = str(self.xl.ActiveWorkbook.Name)
         if ws is None:
-            ws = self.xl.ActiveSheet
+            ws = str(self.xl.ActiveSheet.Name)
         if cell is None:
-            cell = self.xl.Selection.Address
-        target = self.xl.Workbook(wb).Worksheet(ws).Range(cell)
+            cell = str(self.xl.Selection.Address)
+        target = self.xl.Workbooks(wb).Worksheets(ws).Range(cell)
 
         validcolornames = {'k': 1, 'w': 2, 
                            'r': 3, 'g': 4, 'b': 5, 
@@ -230,17 +240,17 @@ any plots or any unnecessary calculations. Hope it's useful!
             
         """
         if wb is None:
-            wb = self.xl.ActiveWorkbook
+            wb = str(self.xl.ActiveWorkbook.Name)
         if ws is None:
-            ws = self.xl.ActiveSheet
+            ws = str(self.xl.ActiveSheet.Name)
         if cell is None:
-            cell = self.xl.Selection.Address
+            cell = str(self.xl.Selection.Address)
         newvar = AssumptionVariable(cell, tag, dist, wb, ws)
         self.assumptions[tag] = newvar
         self.setcellbackground(newvar, 'g')
         if self.verbose:
             print('Added ASSUMPTION variable "{}": {}'.format(tag, 
-                self.getcell(newvar)
+                self.getcell(newvar)))
     
     def addforecast(self, cell=None, tag=None, LSL=None, USL=None,
         target=None, wb=None, ws=None):
@@ -291,17 +301,17 @@ any plots or any unnecessary calculations. Hope it's useful!
             
         """
         if wb is None:
-            wb = self.xl.ActiveWorkbook
+            wb = str(self.xl.ActiveWorkbook.Name)
         if ws is None:
-            ws = self.xl.ActiveSheet
+            ws = str(self.xl.ActiveSheet.Name)
         if cell is None:
-            cell = self.xl.Selection.Address
-        newvar = OutputVariable(cell, tag, LSL, USL, target, wb, ws)
+            cell = str(self.xl.Selection.Address)
+        newvar = ForecastVariable(cell, tag, LSL, USL, target, wb, ws)
         self.forecasts[tag] = newvar
         self.setcellbackground(newvar, 'c')
         if self.verbose:
             print('Added FORECAST variable "{}": {}'.format(tag, 
-                self.getcell(newvar)
+                self.getcell(newvar)))
         
     def run_mc(self):
         # Disable charts and stuff
@@ -325,9 +335,8 @@ any plots or any unnecessary calculations. Hope it's useful!
         
         try:
             # run the simulations
-            if self.verbose:
-                print('Simulating Now!')
-                print('Running {} iterations...'.format(npts))
+            print('Simulating Now!')
+            print('Running {} iterations...'.format(npts))
             start = time()
             a_matrix = np.zeros((npts, len(atags)))
             a_cellrefs = []
@@ -340,14 +349,14 @@ any plots or any unnecessary calculations. Hope it's useful!
                 if it%(npts/20)==0 and it!=0:
                     timetemplate = '{} of {} complete (est. {:2.1f} minutes left)'
                     timeperiter = (time()-start)/(it + 1)
+                    print(timetemplate.format(it, npts, timeperiter*(npts - it)/60))
                     if self.verbose:
-                        print(timetemplate.format(it, npts, timeperiter*(npts - it)/60))
                         print('Current Data:')
                         print(' ')
                         print('         Output              Mean         Stdev        Skewness      Kurtosis')
                         print(' ----------------------  ------------  ------------  ------------  ------------')
                         stattemplate = ' %22s  %12.4f  %12.4f  %12.4f  %12.4f'
-                        stats = self.get_output_stats(upto=self.iter)
+                        stats = self.get_forecast_stats(upto=self.iter)
                         for i, tag in enumerate(ftags):
                             mn, vr, sk, kt, dmin, dmax = stats[:, i]
                             sd = np.sqrt(vr)
@@ -418,7 +427,7 @@ any plots or any unnecessary calculations. Hope it's useful!
     def reset(self):
         self.assumptions = {}
         self.forecasts = {}
-        self.samples = []
+        self.iter = 0
         
     def get_assumption_stats(self, assumption=None, upto=None):
         """
@@ -490,13 +499,19 @@ class AssumptionVariable:
         self.wb = wb
         self.ws = ws
         self.samples = None
+        # print('AssumptionVariable:')
+        # print('    cell: {}'.format(cell))
+        # print('    tag: {}'.format(tag))
+        # print('    dist: {}'.format(dist))
+        # print('    wb: {}'.format(wb))
+        # print('    ws: {}'.format(ws))
     
     def __repr__(self):
         tmp = ''
         if self.tag is not None:
             tmp += '{}:\n'.format(self.tag)
         if self.dist is not None:
-            func = self.dist.keys()
+            func = self.dist.keys()[0]
             params = self.dist[func]
             tmp += '    Distribution = {}{}\n'.format(func, params)
         if self.samples is not None:
@@ -514,7 +529,7 @@ class AssumptionVariable:
         
     def getnewsamples(self):
         if self.dist is not None:
-            func = self.dist.keys()
+            func = self.dist.keys()[0]
             params = self.dist[func]
             self.samples = func(*params)._mcpts
             return self.samples
@@ -653,8 +668,9 @@ class ForecastVariable:
         stats = self.getstats()
         mu = stats[0]
         sigma = stats[1]**0.5
-        normsdist = ss.norm(loc=0, scale=1)
-        normsinv = normsdist.ppf
+        norm = ss.norm(loc=0, scale=1)
+        normsdist = norm.pdf
+        normsinv = norm.ppf
         
         if isLSL and isUSL:
             metrics['Cp'] = (USL - LSL)/(6*sigma)
@@ -664,7 +680,7 @@ class ForecastVariable:
             metrics['Cpk-upper'] = (USL - mu)/(3*sigma)
         if isLSL and isUSL:
             metrics['Cpk'] = min(metrics['Cpk-lower'], metrics['Cpk-upper'])
-        if isLSL and isUSL: and istarget:
+        if isLSL and isUSL and istarget:
             metrics['Cpm'] = (USL - LSL)/(6*((mu - target)^2 + sigma^2)**0.5)
 
         if isLSL and isUSL:
@@ -675,7 +691,7 @@ class ForecastVariable:
             metrics['Ppk-upper'] = (USL - mu)/(3*sigma)
         if isLSL and isUSL:
             metrics['Ppk'] = min(metrics['Ppk-lower'], metrics['Ppk-upper'])
-        if isLSL and isUSL: and istarget:
+        if isLSL and isUSL and istarget:
             metrics['Ppm'] = (USL - LSL)/(6*((mu - target)^2 + sigma^2)**0.5)
             
         if isLSL:
